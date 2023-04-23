@@ -200,16 +200,22 @@ def get_input_file(ncdPath,rrLogPath):
 
 
 
+def stop_ndas_drivesim_container():
+    try:
+
+        ndas = client.containers.get("ndas")
+        ndas.kill()
+    except docker.errors.NotFound:
+        print("docker container not exist")
+
+    try:
+        ds = client.containers.get("drivesim-ov")
+        ds.kill()
+    except docker.errors.NotFound:
+        print("docker container not exist")
 
 
 
-
-
-def stop_ndas_ds_container():
-    ndas = client.containers.get("ndas")
-    ds = client.containers.get("drivesim-ov")
-    ndas.stop()
-    ds.stop()
 
 with DAG(
     dag_id="run_ndas_drivesim_container",
@@ -233,11 +239,9 @@ with DAG(
     watch_scenario_completed = BashOperator(task_id="watch_scenario_completed_task",bash_command=watch_scenario_completed,params = {'container_name' : 'drivesim-ov'})
     backup_nano_osi_roadcast = BashOperator(task_id="backup_nano_osi_roadcast_task",bash_command=backup_nano_osi_roadcast_file,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath.split("/")[-1].split(".")[0],"ncdPath":ncdPath,"rrLogPath":rrLogPath})
     evaluation_report = BashOperator(task_id="evaluation_report_task",bash_command=evaluations_report,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath})
-    #stop_ndas_ds_container = PythonOperator(task_id='stop_ndas_ds_container_task',python_callable=stop_ndas_ds_container,do_xcom_push=True,dag=dag) 
+    stop_ndas_drivesim_container = PythonOperator(task_id='stop_ndas_ds_container_task',python_callable=stop_ndas_drivesim_container,do_xcom_push=True,dag=dag) 
 
-start   >> create_ndas_container >> create_drivesim_container  >> scenario_waiting_on_Control >> run_ndas_script  >> watch_scenario_completed  >> evaluation_report  >> backup_nano_osi_roadcast 
-
-#stop_ndas_ds_container
+start   >> create_ndas_container >> create_drivesim_container  >> scenario_waiting_on_Control >> run_ndas_script  >> watch_scenario_completed  >> evaluation_report  >> backup_nano_osi_roadcast  >> stop_ndas_drivesim_container
 
 
 

@@ -140,10 +140,18 @@ def get_kitLog_name():
 
 
 def stop_ndas_ds_container():
-    ndas = client.containers.get("ndas")
-    ds = client.containers.get("drivesim-ov")
-    ndas.stop()
-    ds.stop()
+    try:
+
+        ndas = client.containers.get("ndas")
+        ndas.kill()
+    except docker.errors.NotFound:
+        print("docker container not exist")
+
+    try:
+        ds = client.containers.get("drivesim-ov")
+        ds.kill()
+    except docker.errors.NotFound:
+        print("docker container not exist")
 
 with DAG(
     dag_id="stop_ndas_drivesim_container",
