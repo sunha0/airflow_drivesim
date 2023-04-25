@@ -26,18 +26,16 @@ siltestDir = Variable.get("siltest_dir")
 cacheDir = siltestDir + "/cache/dockerovcache-dev"
 testCasePath = Variable.get("test_case_path")
 
-rrLogPath=f"{siltestDir}/rrLog"
-ncdPath=f"{siltestDir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1"
+rrLogPath = f"{siltestDir}/rrLog"
+ncdPath   =   f"{siltestDir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1"
+
+
 
 
 airflowDagPath="/data/airflow/dags/scripts"
 
-
-
-backup_nano_osi_roadcast_file="""{{params.airflowDagPath}}/backup_nano_osi_roadcast.sh {{params.siltestDir}}  {{params.testCaseName}}  {{params.ncdPath}} {{params.rrLogPath}}"""
 evaluations_report="""{{params.airflowDagPath}}/evaluations.sh {{params.siltestDir}} {{params.testCaseName}} """
-
-
+#evaluations_report="""{{params.airflowDagPath}}/evaluations.sh {{params.siltestDir}} {{params.testCaseName}} {{params.ncdPath}} {{params.rrLogPath}} """
 
 watch_scenario="""
 while true
@@ -68,10 +66,16 @@ done
 """
 
 
-cleanup_nano_osi_roadcast_file="""
-#!/bin/bash
-ls -al   {{params.ncdPath}}/*
-ls -al {{params.rrLogPath}}/*
+clean_up_nano_osi_roadcast_file="""
+
+mkdir -p  /tmp/{ncdPath,rrLogPath}
+mv ${ncdPath}/*  /tmp/ncdPath
+mv ${rrLogPath}/* /tmp/rrLogPath
+
+
+rm -rf /tmp/ncdPath
+rm -rf /tmp/rrLogPath
+
 """
 
 
@@ -103,7 +107,7 @@ def run_ndas_container():
                 Mount(target="/home/rrLog",source=f"{siltestDir}/rrLog",type="bind"),
                 Mount(target="/etc/timezone",source="/etc/timezone",type="bind"),
                 Mount(target="/etc/localtime",source="/etc/localtime",type="bind"),
-                Mount(source=airflowDagPath+"/run_ndas.sh",target="/home/run_ndas.sh",type="bind"),
+                Mount(source=siltestDir+"/script/run_ndas.sh",target="/home/run_ndas.sh",type="bind"),
                 ]
             )
 
@@ -145,7 +149,7 @@ def run_drivesim_container():
                 Mount(source=cacheDir+"/.nv",target="/drivesim-ov/.nv",type="bind"),
                 Mount(source=cacheDir+"/.nvidia-omniverse",target="/drivesim-ov/.nvidia-omniverse",type="bind"),
                 Mount(source=siltestDir+"/digital-testing-product/testcase_assets",target="/drivesim-ov/testcase_assets",type="bind"),
-                Mount(source=airflowDagPath+"/run_sim_airflow.sh",target="/drivesim-ov/run_sim_airflow.sh",type="bind"),
+                Mount(source=siltestDir+"/script/run_sim_airflow.sh",target="/drivesim-ov/run_sim_airflow.sh",type="bind"),
                 #Mount(source=siltestDir+"/log/ds2_run.log",target="/drivesim-ov/ds2_run.log",type="bind"),
                 #Mount(source=siltestDir+"/log/scenario_run.log",target="/drivesim-ov/scenario_run.log",type="bind"),
                 ]
@@ -194,25 +198,19 @@ def get_input_file(ncdPath,rrLogPath):
 
 
 
-def stop_ndas_drivesim_container():
-    try:
-
-        ndas = client.containers.get("ndas")
-        ndas.kill()
-    except docker.errors.NotFound:
-        print("docker container not exist")
-
-    try:
-        ds = client.containers.get("drivesim-ov")
-        ds.kill()
-    except docker.errors.NotFound:
-        print("docker container not exist")
 
 
 
+
+
+def stop_ndas_ds_container():
+    ndas = client.containers.get("ndas")
+    ds = client.containers.get("drivesim-ov")
+    ndas.stop()
+    ds.stop()
 
 with DAG(
-    dag_id="run_ndas_drivesim_container",
+    dag_id="run_evaluations",
     schedule=None,
     start_date=pendulum.datetime(2021, 1, 1, tz="Asia/Shanghai"),
     catchup=False,
@@ -220,24 +218,25 @@ with DAG(
     tags=["siltest"]
 ) as dag:
 
-    start = EmptyOperator(task_id='start', dag=dag) 
+    start_ndas = EmptyOperator(task_id='start_ndas', dag=dag) 
     #clean_up_nano_osi_roadcast_file = BashOperator(task_id="clean_up_nano_osi_roadcast_file_task",bash_command=clean_up_nano_osi_roadcast_file)
 
-    create_ndas_container = PythonOperator(task_id='create_ndas_container_task',python_callable=run_ndas_container,do_xcom_push=True,dag=dag) 
-    create_drivesim_container = PythonOperator(task_id='create_drivesim_container_task',python_callable=run_drivesim_container,do_xcom_push=True,dag=dag) 
+    #create_ndas_container = PythonOperator(task_id='create_ndas_container_task',python_callable=run_ndas_container,do_xcom_push=True,dag=dag) 
+    #create_drivesim_container = PythonOperator(task_id='create_drivesim_container_task',python_callable=run_drivesim_container,do_xcom_push=True,dag=dag) 
     
-    scenario_waiting_on_Control = BashOperator(task_id="scenario_waiting_on_control_task",bash_command=watch_scenario,params = {'container_name' : 'drivesim-ov'})
+    #scenario_waiting_on_Control = BashOperator(task_id="scenario_waiting_on_control_task",bash_command=watch_scenario,params = {'container_name' : 'drivesim-ov'})
     
-    run_ndas_script = PythonOperator(task_id='run_ndas_script_task',python_callable=run_ndas_script,do_xcom_push=True,dag=dag)
+    #run_ndas_script = PythonOperator(task_id='run_ndas_script_task',python_callable=run_ndas_script,do_xcom_push=True,dag=dag)
 
-    watch_scenario_completed = BashOperator(task_id="watch_scenario_completed_task",bash_command=watch_scenario_completed,params = {'container_name' : 'drivesim-ov'})
-    backup_nano_osi_roadcast = BashOperator(task_id="backup_nano_osi_roadcast_task",bash_command=backup_nano_osi_roadcast_file,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath.split("/")[-1].split(".")[0],"ncdPath":ncdPath,"rrLogPath":rrLogPath})
-    evaluation_report = BashOperator(task_id="evaluation_report_task",bash_command=evaluations_report,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath})
-    stop_ndas_drivesim_container = PythonOperator(task_id='stop_ndas_ds_container_task',python_callable=stop_ndas_drivesim_container,do_xcom_push=True,dag=dag) 
+    #watch_scenario_completed = BashOperator(task_id="watch_scenario_completed_task",bash_command=watch_scenario_completed,params = {'container_name' : 'drivesim-ov'})
+    #evaluations = BashOperator(task_id="backup_nano_osi_roadcast_task",bash_command=evaluations_report,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath.split("scenarios/")[1],"ncdPath":ncdPath,"rrLogPath":rrLogPath})
+    evaluations = BashOperator(task_id="backup_nano_osi_roadcast_task",bash_command=evaluations_report,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath})
 
-    cleanup_nano_osi_roadcast_file = BashOperator(task_id="cleanup_nano_osi_roadcast_task",bash_command=cleanup_nano_osi_roadcast_file,params={"ncdPath":ncdPath,"rrLogPath":rrLogPath})
-    
-start   >> create_ndas_container >> create_drivesim_container  >> scenario_waiting_on_Control >> run_ndas_script  >> watch_scenario_completed  >> evaluation_report  >> backup_nano_osi_roadcast  >> stop_ndas_drivesim_container >> cleanup_nano_osi_roadcast_file
+    #stop_ndas_ds_container = PythonOperator(task_id='stop_ndas_ds_container_task',python_callable=stop_ndas_ds_container,do_xcom_push=True,dag=dag) 
+
+start_ndas   >> evaluations 
+
+#stop_ndas_ds_container
 
 
 

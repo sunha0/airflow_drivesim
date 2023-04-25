@@ -27,7 +27,7 @@ evaluation_test_case_file="${evaluation_path}/${siltest_case_evaluation}.xedf"
 
 
 siltest_case_evaluation_dir=${siltest_case_evaluation}_$(date "+%Y_%m_%d_%H%M%S")
-echo $siltest_case_evaluation_dir
+echo "siltest_case_evaluation_dir: $siltest_case_evaluation_dir"
 
 if [ ! -d "${siltest_dir}/silEvaluationOutput/${siltest_case_evaluation_dir}" ];then 
 	echo 111111111
@@ -71,15 +71,18 @@ csv_file_name=${csv_file_path##*/}
 log_file_name=${log_file_path##*/}
 hdf5_file_name=${hdf5_file_path##*/}
 
-#mkdir -p  /tmp/${siltest_case_evaluation} && chmod 777 -R /tmp/${siltest_case_evaluation}
+mkdir -p  /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir} && chmod 777 -R /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir}
 docker run -i --rm \
        -v $siltest_dir/silEvaluationInput/${siltest_case_evaluation_dir}:/home/ubuntu \
-       -v /tmp/:/tmp/ \
+       -v /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir}:/tmp/${siltest_case_evaluation_dir} \
        artifact.swf.daimler.com/adasdai-docker/davt/davt:v0.40.0  pipenv run python ./davt.py  -d --app=DetestEval --eval-description-file /home/ubuntu/${xedf_file_name}  \
        --abd-config /home/ubuntu/${json_file_name}  \
        --input-can /home/ubuntu/${csv_file_name} \
        --input-rclog /home/ubuntu/${log_file_name} \
        --input-ecal /home/ubuntu/${hdf5_file_name} \
-       --force --output-path  /tmp/${siltest_case_evaluation}/
-
-bash  /data/airflow/dags/scripts/copy_evaluation_report.sh  ${siltest_case_evaluation}  ${siltest_case_evaluation_dir}
+       --force --output-path  /tmp/${siltest_case_evaluation_dir}
+#echo "------ll------"
+#ls -al /tmp/${siltest_case_evaluation}/
+#echo "------ll------"
+#bash  /data/airflow/dags/scripts/copy_evaluation_report.sh  ${siltest_case_evaluation}  ${siltest_case_evaluation_dir}
+#echo "after  copy...."
