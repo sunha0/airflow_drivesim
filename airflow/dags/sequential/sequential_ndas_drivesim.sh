@@ -11,16 +11,20 @@
 #testCasePath = Variable.get("test_case_path")
 
 siltestDir=$1
-
+echo "siltestDir:"$siltestDir
 dockerHost=$2
-
+echo "dockerHost:"$dockerHost
 ndasImage=$3
-
+echo "ndasImage:"$ndasImage
 drivesimImage=$4
-
+echo "drivesimImage:"$drivesimImage
 testCasePath=$5
+echo "testCasePath:"$testCasePath
 
-cacheDir=$siltestDir + "/cache/dockerovcache-dev"
+currentdir=$(cd `dirname $0`; pwd)
+#currentdir=$6
+echo "currentdir:"$currentdir
+cacheDir=$siltestDir/cache/dockerovcache-dev
 
 rrLogPath=$siltestDir/rrLog
 
@@ -28,20 +32,22 @@ ncdPath=$siltestDir/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.driv
 
 airflowDagPath="/data/airflow/dags/scripts"
 
-python3 create_ndas_container.py $dockerHost
+echo "currentdir:"$currentdir
 
-python3 create_drivesim_container.py $dockerHost $testCasePath
+python3 $currentdir/create_ndas_container.py $dockerHost
 
-./scenario_waiting_on_Control.sh
+python3 $currentdir/create_drivesim_container.py $dockerHost $testCasePath
 
-python3 run_ndas_script.py $dockerHost
+bash $currentdir/scenario_waiting_on_Control.sh
 
-./watch_scenario_completed.sh
+python3 $currentdir/run_ndas_script.py $dockerHost
 
-./evaluation_report.sh $airflowDagPath $siltestDir $testCasePath
+bash $currentdir/watch_scenario_completed.sh
 
-./backup_nano_osi_roadcast.sh $airflowDagPath $siltestDir $testCasePath $ncdPath $rrLogPath
+bash $currentdir/evaluation_report.sh $airflowDagPath $siltestDir $testCasePath
 
-python3 stop_ndas_drivesim_container.py $dockerHost
+bash $currentdir/backup_nano_osi_roadcast.sh $airflowDagPath $siltestDir $testCasePath $ncdPath $rrLogPath
 
-python3 cleanup_nano_osi_roadcast_file.py $dockerHost $ncdPath $rrLogPath
+python3 $currentdir/stop_ndas_drivesim_container.py $dockerHost
+
+python3 $currentdir/cleanup_nano_osi_roadcast_file.py $dockerHost $ncdPath $rrLogPath

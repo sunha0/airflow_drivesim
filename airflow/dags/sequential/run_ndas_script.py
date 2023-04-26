@@ -1,5 +1,6 @@
 import sys
 from airflow.operators.docker_operator import DockerOperator
+import docker
 
 client = docker.DockerClient(base_url=f"tcp://" + sys.argv[1] + ":2375", version="auto")  # 创建一个docker客户端
 

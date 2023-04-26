@@ -8,7 +8,7 @@ from airflow.operators.empty import EmptyOperator
 from airflow.models import Variable
 import pathlib
 
-currentdir = pathlib.Path(__file__).parent.resolve()
+currentdir = str(pathlib.Path(__file__).parent.resolve())
 
 print("currentdir:" + currentdir)
 
@@ -22,7 +22,8 @@ drivesimImage = Variable.get("drivesim_image")
 siltestDir = Variable.get("siltest_dir")
 cacheDir = siltestDir + "/cache/dockerovcache-dev"
 testCasePath = Variable.get("test_case_path")
-
+sequential_dir = Variable.get("sequential_dir")
+print("sequential_dir:" + sequential_dir)
 rrLogPath = f"{siltestDir}/rrLog"
 ncdPath = f"{siltestDir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1"
 
@@ -38,7 +39,8 @@ with DAG(
 ) as dag:
     start = EmptyOperator(task_id='start', dag=dag)
     run_case = BashOperator(task_id="run_case",
-                            bash_command="bash " + currentdir + "/sequential/sequential_ndas_drivesim.sh " + siltestDir + " " + dockerHost + " " + ndasImage + " " + drivesimImage + " " + testCasePath + " ")
+                            bash_command="bash " + sequential_dir + "/sequential_ndas_drivesim.sh " + siltestDir + " "
+                                         + dockerHost + " " + ndasImage + " " + drivesimImage + " " + testCasePath + " " + sequential_dir + " ")
 
     start >> run_case
 
