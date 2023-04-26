@@ -1,16 +1,11 @@
 from __future__ import annotations
 
 import datetime
-import time
 import pendulum
-import os
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.models import Variable
-# from airflow.providers.docker.operators.docker import DockerOperator
-from airflow.operators.docker_operator import DockerOperator
-import subprocess
 
 dockerHost = Variable.get("docker_host")
 
