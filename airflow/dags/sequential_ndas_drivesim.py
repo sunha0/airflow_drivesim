@@ -6,6 +6,11 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.models import Variable
+import pathlib
+
+currentdir = pathlib.Path(__file__).parent.resolve()
+
+print("currentdir:" + currentdir)
 
 dockerHost = Variable.get("docker_host")
 
@@ -33,7 +38,7 @@ with DAG(
 ) as dag:
     start = EmptyOperator(task_id='start', dag=dag)
     run_case = BashOperator(task_id="run_case",
-                            bash_command="bash " + siltestDir + "/sequential/sequential_ndas_drivesim.sh " + siltestDir + " " + dockerHost + " " + ndasImage + " " + drivesimImage + " " + testCasePath + " ")
+                            bash_command="bash " + currentdir + "/sequential/sequential_ndas_drivesim.sh " + siltestDir + " " + dockerHost + " " + ndasImage + " " + drivesimImage + " " + testCasePath + " ")
 
     start >> run_case
 
