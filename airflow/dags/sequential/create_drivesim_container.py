@@ -8,7 +8,7 @@ client = docker.DockerClient(base_url=f"tcp://" + sys.argv[1] + ":2375", version
 
 def run_drivesim_container():
     drivesim = client.containers.run(
-        image=drivesimImage,
+        image=sys.argv[6],
         command=[
             f"bash /drivesim-ov/run_sim_airflow.sh " + sys.argv[2]
         ],
@@ -36,15 +36,15 @@ def run_drivesim_container():
             Mount(target="/tmp/.X11-unix", source="/tmp/.X11-unix", type="bind"),
             Mount(target="/etc/timezone", source="/etc/timezone", type="bind"),
             Mount(target="/etc/localtime", source="/etc/localtime", type="bind"),
-            Mount(source=cacheDir + "/.cache", target="/drivesim-ov/.cache", type="bind"),
-            Mount(source=cacheDir + "/.local", target="/drivesim-ov/.local", type="bind"),
-            Mount(source=cacheDir + "/.nv", target="/drivesim-ov/.nv", type="bind"),
-            Mount(source=cacheDir + "/.nvidia-omniverse", target="/drivesim-ov/.nvidia-omniverse", type="bind"),
-            Mount(source=siltestDir + "/digital-testing-product/testcase_assets", target="/drivesim-ov/testcase_assets",
+            Mount(source=sys.argv[3] + "/.cache", target="/drivesim-ov/.cache", type="bind"),
+            Mount(source=sys.argv[3] + "/.local", target="/drivesim-ov/.local", type="bind"),
+            Mount(source=sys.argv[3] + "/.nv", target="/drivesim-ov/.nv", type="bind"),
+            Mount(source=sys.argv[3] + "/.nvidia-omniverse", target="/drivesim-ov/.nvidia-omniverse", type="bind"),
+            Mount(source=sys.argv[4] + "/digital-testing-product/testcase_assets", target="/drivesim-ov/testcase_assets",
                   type="bind"),
-            Mount(source=airflowDagPath + "/run_sim_airflow.sh", target="/drivesim-ov/run_sim_airflow.sh", type="bind"),
-            # Mount(source=siltestDir+"/log/ds2_run.log",target="/drivesim-ov/ds2_run.log",type="bind"),
-            # Mount(source=siltestDir+"/log/scenario_run.log",target="/drivesim-ov/scenario_run.log",type="bind"),
+            Mount(source=sys.argv[5] + "/run_sim_airflow.sh", target="/drivesim-ov/run_sim_airflow.sh", type="bind"),
+            # Mount(source=sys.argv[4]+"/log/ds2_run.log",target="/drivesim-ov/ds2_run.log",type="bind"),
+            # Mount(source=sys.argv[4]+"/log/scenario_run.log",target="/drivesim-ov/scenario_run.log",type="bind"),
         ]
     )
     print(drivesim)

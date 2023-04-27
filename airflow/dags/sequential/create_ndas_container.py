@@ -8,7 +8,7 @@ client = docker.DockerClient(base_url=f"tcp://" + sys.argv[1] + ":2375", version
 
 def run_ndas_container():
     ndas = client.containers.run(
-        image=ndasImage,
+        image=sys.argv[2],
         name="ndas",
         user="nvidia",
         privileged=True,
@@ -24,10 +24,10 @@ def run_ndas_container():
         entrypoint="/home/entry.sh",
         mounts=[
             Mount(target="/tmp/.X11-unix", source="/tmp/.X11-unix", type="bind"),
-            Mount(target="/home/rrLog", source=f"" + sys.argv[1] + "/rrLog", type="bind"),
+            Mount(target="/home/rrLog", source=f"" + sys.argv[4] + "/rrLog", type="bind"),
             Mount(target="/etc/timezone", source="/etc/timezone", type="bind"),
             Mount(target="/etc/localtime", source="/etc/localtime", type="bind"),
-            Mount(source=airflowDagPath + "/run_ndas.sh", target="/home/run_ndas.sh", type="bind"),
+            Mount(source=sys.argv[3] + "/run_ndas.sh", target="/home/run_ndas.sh", type="bind"),
         ]
     )
 
