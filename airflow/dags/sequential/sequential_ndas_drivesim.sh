@@ -34,9 +34,9 @@ airflowDagPath="/data/airflow/dags/scripts"
 
 echo "currentdir:"$currentdir
 
-python3 $currentdir/create_ndas_container.py $dockerHost
+python3 $currentdir/create_ndas_container.py $dockerHost $ndasImage $airflowDagPath $siltestDir
 
-python3 $currentdir/create_drivesim_container.py $dockerHost $testCasePath
+python3 $currentdir/create_drivesim_container.py $dockerHost $testCasePath $cacheDir $siltestDir $airflowDagPath $drivesimImage
 
 bash $currentdir/scenario_waiting_on_Control.sh
 
@@ -46,8 +46,8 @@ bash $currentdir/watch_scenario_completed.sh
 
 bash $currentdir/evaluation_report.sh $airflowDagPath $siltestDir $testCasePath
 
-bash $currentdir/backup_nano_osi_roadcast.sh $airflowDagPath $siltestDir $testCasePath $ncdPath $rrLogPath
+bash $currentdir/backup_nano_osi_roadcast.sh $airflowDagPath $siltestDir $ncdPath $testCasePath $rrLogPath
 
 python3 $currentdir/stop_ndas_drivesim_container.py $dockerHost
 
-python3 $currentdir/cleanup_nano_osi_roadcast_file.py $dockerHost $ncdPath $rrLogPath
+bash $currentdir/cleanup_nano_osi_roadcast_file.sh $ncdPath $rrLogPath
