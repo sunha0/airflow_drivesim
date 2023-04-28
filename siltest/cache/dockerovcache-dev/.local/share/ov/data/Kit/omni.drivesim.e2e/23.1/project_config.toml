@@ -1,0 +1,32 @@
+[project_root]
+setting = ".."
+
+[content_root]
+name = "ds2_content"
+
+[content_subfolders]
+asset = [ "people", "animals", "props_general", "props_signage", "props_traffic", "props_poles", "props_structures", "props_vegetation", "parking", "road_runner", "vehicles",]
+
+[content_category_labels]
+people = "person"
+vehicles = "automobile"
+animals = "animal"
+
+[countries]
+global = [ "china", "germany", "japan", "sweden", "usa", "uk",]
+
+[material]
+basename = "SimPBR"
+
+[physics_material_remappings]
+emissive = "plastic"
+metallic = "metal"
+
+[validate]
+ignore = []
+shadertypes = [ "opaque", "trans", "thin", "clearcoat", "retro",]
+surfacetypes = [ "emissive", "cardboard", "glass", "metal", "paint", "concrete", "cement", "asphalt", "wood", "plant", "leaf", "rubber", "plastic", "vinyl", "stone", "rock", "leather", "fabric", "organic",]
+part_names = [ "body", "grill", "hood", "trunk", "undercarriage", "interior", "door_0", "door_1", "door_2", "door_3", "door_trunk", "door_hood", "door_sunroof", "glass", "glass_0", "glass_1", "glass_2", "glass_3", "lights", "lights_0", "lights_1", "lights_trunk", "brake_0", "brake_1", "brake_2", "brake_3", "wheel_0", "wheel_1", "wheel_2", "wheel_3", "wheel_front_0", "wheel_front_1", "wheel_rear_2", "wheel_rear_3", "wheel_all_0", "wheel_all_1", "wheel_all_2", "wheel_all_3",]
+
+[project_root_absolute]
+setting = "omniverse://drivesim2-rel.ov.nvidia.com/Projects"

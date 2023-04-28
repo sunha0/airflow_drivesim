@@ -30,19 +30,27 @@ rrLogPath=f"{siltestDir}/rrLog"
 ncdPath=f"{siltestDir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1"
 
 
-airflowDagPath="/data/airflow/dags/scripts"
+airflowDagPath="/lake_taihu/data/airflow/dags/scripts"
 
+logPath = os.path.join(siltestDir, 'logs')
+if not os.path.exists(logPath):
+    os.mkdir(logPath)  # 如果不存在这个logs文件夹，就自动创建一个
+logFile = os.path.join(logPath, 'ds2_run.log')
+if not os.path.exists(logFile):
+     os.system(r"touch {}".format(logFile))  # 如果不存在这个文件，就自动创建一个
+     os.system(r"chmod 777 {}".format(logFile))
 
+print(logFile)
 
 backup_nano_osi_roadcast_file="""{{params.airflowDagPath}}/backup_nano_osi_roadcast.sh {{params.siltestDir}}  {{params.testCaseName}}  {{params.ncdPath}} {{params.rrLogPath}}"""
-evaluations_report="""{{params.airflowDagPath}}/evaluations.sh {{params.siltestDir}} {{params.testCaseName}} """
+evaluations_report="""sudo bash {{params.airflowDagPath}}/evaluations.sh {{params.siltestDir}} {{params.testCaseName}} """
 
 
 
 watch_scenario="""
 while true
     do
-        log_info=`docker exec -i {{params.container_name}}  bash  -c "tail -n 50 ds2_run.log"`
+        log_info=`tail -n 100 {{params.logFile}}`
         echo ${log_info}
         if echo  ${log_info}  | grep -q "Scenario Start/Resume is waiting on Control, client must indicate progression"; then
         
@@ -56,9 +64,9 @@ done
 watch_scenario_completed="""
 while true
     do
-        log_info=`docker exec -i {{params.container_name}}  bash  -c "tail -n 50 ds2_run.log"`
+        log_info=`tail -n 100 {{params.logFile}}`
         echo ${log_info}
-        if echo  ${log_info}  | grep -q "ScenarioStateChange to eStopping broadcast completed"; then
+        if echo  ${log_info}  | grep -q "ScenarioStateChange to eLoading broadcast completed"; then
         
             echo "ScenarioStateChange to eStopping broadcast completed"
             sleep 5
@@ -146,7 +154,7 @@ def run_drivesim_container():
                 Mount(source=cacheDir+"/.nvidia-omniverse",target="/drivesim-ov/.nvidia-omniverse",type="bind"),
                 Mount(source=siltestDir+"/digital-testing-product/testcase_assets",target="/drivesim-ov/testcase_assets",type="bind"),
                 Mount(source=airflowDagPath+"/run_sim_airflow.sh",target="/drivesim-ov/run_sim_airflow.sh",type="bind"),
-                #Mount(source=siltestDir+"/log/ds2_run.log",target="/drivesim-ov/ds2_run.log",type="bind"),
+                Mount(source=logFile,target="/drivesim-ov/ds2_run.log",type="bind"),
                 #Mount(source=siltestDir+"/log/scenario_run.log",target="/drivesim-ov/scenario_run.log",type="bind"),
                 ]
             )
@@ -226,11 +234,11 @@ with DAG(
     create_ndas_container = PythonOperator(task_id='create_ndas_container_task',python_callable=run_ndas_container,do_xcom_push=True,dag=dag) 
     create_drivesim_container = PythonOperator(task_id='create_drivesim_container_task',python_callable=run_drivesim_container,do_xcom_push=True,dag=dag) 
     
-    scenario_waiting_on_Control = BashOperator(task_id="scenario_waiting_on_control_task",bash_command=watch_scenario,params = {'container_name' : 'drivesim-ov'})
+    scenario_waiting_on_Control = BashOperator(task_id="scenario_waiting_on_control_task",bash_command=watch_scenario,params = {'logFile' : logFile})
     
     run_ndas_script = PythonOperator(task_id='run_ndas_script_task',python_callable=run_ndas_script,do_xcom_push=True,dag=dag)
 
-    watch_scenario_completed = BashOperator(task_id="watch_scenario_completed_task",bash_command=watch_scenario_completed,params = {'container_name' : 'drivesim-ov'})
+    watch_scenario_completed = BashOperator(task_id="watch_scenario_completed_task",bash_command=watch_scenario_completed,params = {'logFile' : logFile})
     backup_nano_osi_roadcast = BashOperator(task_id="backup_nano_osi_roadcast_task",bash_command=backup_nano_osi_roadcast_file,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath.split("/")[-1].split(".")[0],"ncdPath":ncdPath,"rrLogPath":rrLogPath})
     evaluation_report = BashOperator(task_id="evaluation_report_task",bash_command=evaluations_report,params={"airflowDagPath":airflowDagPath,"siltestDir":siltestDir,"testCaseName":testCasePath})
     stop_ndas_drivesim_container = PythonOperator(task_id='stop_ndas_ds_container_task',python_callable=stop_ndas_drivesim_container,do_xcom_push=True,dag=dag) 
@@ -239,7 +247,7 @@ with DAG(
     
 start   >> create_ndas_container >> create_drivesim_container  >> scenario_waiting_on_Control >> run_ndas_script  >> watch_scenario_completed  >> evaluation_report  >> backup_nano_osi_roadcast  >> stop_ndas_drivesim_container >> cleanup_nano_osi_roadcast_file
 
-####1111
+
 
 
 

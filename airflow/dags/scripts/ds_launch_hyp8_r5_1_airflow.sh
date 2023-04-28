@@ -3,7 +3,7 @@ omiverse="10.229.0.223"
 drivesim_image="artifact.swf.daimler.com/adasndas-docker/sil3/r5_containers/ds:ds13_r5_1_final"
 test_case_path="/drivesim-ov/testcase_assets/scenarios/autonomous_emergency_braking_aeb/aeb_china/ivista/aeb_ccrm_day_100_impact_70_gvt_20_3521574.xebtb"
 
-export siltest_dir="/data/siltest"
+export siltest_dir="/lake_taihu/data/siltest"
 export CACHE_DIR=${siltest_dir}/cache/dockerovcache-dev
 mkdir -p $CACHE_DIR/.local
 mkdir -p $CACHE_DIR/.nv

@@ -1,0 +1,126 @@
+Crash detected in pid 42 thread 42
+Crash metadata:
+  CarbSdkVersion = '135.0+master.tc6937.350f7a88'
+  DumpId = '121e5374-52e5-4f25-65c3d3a9-cb1bb7c0'
+  ProductName = 'OmniverseKit'
+  RetryCount = '0'
+  StartupTime = '1681806203'
+  UptimeSeconds = '7'
+  Version = ''
+  appName = 'omni.drivesim.e2e'
+  appState = 'startup'
+  appVersion = '23.1.0'
+  autoloadExts = ''
+  cpuId = 'Intel64 Family 23 Model 49 Stepping 0'
+  cpuName = 'AMD EPYC 7R32'
+  cpuVendor = 'AuthenticAMD'
+  display_env_var = ':1'
+  drivesim_build_branch = 'dev/berickson/mb-engineering-build-revert-realm-regression'
+  drivesim_build_date = 'Jan-31-2023'
+  drivesim_build_sha = '8d814f611e'
+  drivesim_docker_permutation = 'mercedes'
+  environmentName = 'default'
+  externalBuild = '0'
+  gpuDriver_0 = '470.182'
+  gpuDriver_1 = '470.182'
+  gpuDriver_2 = '470.182'
+  gpuDriver_3 = '470.182'
+  gpuDriver_4 = '470.182'
+  gpuDriver_5 = '470.182'
+  gpuDriver_6 = '470.182'
+  gpuDriver_7 = '470.182'
+  gpuVRAM_0 = '25757220864'
+  gpuVRAM_1 = '25757220864'
+  gpuVRAM_2 = '25757220864'
+  gpuVRAM_3 = '25757220864'
+  gpuVRAM_4 = '25757220864'
+  gpuVRAM_5 = '25757220864'
+  gpuVRAM_6 = '25757220864'
+  gpuVRAM_7 = '25757220864'
+  gpu_0 = 'NVIDIA A10G'
+  gpu_1 = 'NVIDIA A10G'
+  gpu_2 = 'NVIDIA A10G'
+  gpu_3 = 'NVIDIA A10G'
+  gpu_4 = 'NVIDIA A10G'
+  gpu_5 = 'NVIDIA A10G'
+  gpu_6 = 'NVIDIA A10G'
+  gpu_7 = 'NVIDIA A10G'
+  kitRendererDriverVersion = '470.182'
+  memoryStats = '(avail/total) RAM: 734.442/747.946GB, Swap: 15.999/15.999GB, VM: 1.71799e+10/1.71799e+10GB'
+  no_window = '0'
+  osDistro = 'ubuntu'
+  osName = '18.04.6 LTS (Bionic Beaver)'
+  osVersion = '18.4.6'
+  portableMode = '0'
+  realmProcessCount = '1'
+  realmProcessIndex = '0'
+  systemInfo = '
+|---------------------------------------------------------------------------------------------|
+| Driver Version: 470.182.3     | Graphics API: Vulkan
+|=============================================================================================|
+| GPU | Name                             | Active | LDA | GPU Memory | Vendor-ID | LUID       |
+|     |                                  |        |     |            | Device-ID | UUID       |
+|---------------------------------------------------------------------------------------------|
+| 0   | NVIDIA A10G                      |        |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | f81797fb.. |
+|---------------------------------------------------------------------------------------------|
+| 1   | NVIDIA A10G                      | Yes: 0 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | c668e110.. |
+|---------------------------------------------------------------------------------------------|
+| 2   | NVIDIA A10G                      | Yes: 1 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | 70235414.. |
+|---------------------------------------------------------------------------------------------|
+| 3   | NVIDIA A10G                      | Yes: 2 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | 4d2518e2.. |
+|---------------------------------------------------------------------------------------------|
+| 4   | NVIDIA A10G                      | Yes: 3 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | 4eb9a677.. |
+|---------------------------------------------------------------------------------------------|
+| 5   | NVIDIA A10G                      | Yes: 4 |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | 343aee31.. |
+|---------------------------------------------------------------------------------------------|
+| 6   | NVIDIA A10G                      |        |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | 7852b340.. |
+|---------------------------------------------------------------------------------------------|
+| 7   | NVIDIA A10G                      |        |     | 24564   MB | 10de      | 0          |
+|     |                                  |        |     |            | 2237      | 777ac458.. |
+|=============================================================================================|
+| OS: 18.04.6 LTS (Bionic Beaver) ubuntu, Version: 18.04.6, Kernel: 5.15.0-1033-aws
+| Processor: AMD EPYC 7R32 | Cores: 96 | Logical: 192
+|---------------------------------------------------------------------------------------------|
+| Total Memory (MB): 765896 | Free Memory: 757776
+| Total Page/Swap (MB): 16382 | Free Page/Swap: 16382
+|---------------------------------------------------------------------------------------------|
+'
+  telemetrySessionId = '0'
+
+Thread 42 backtrace follows:
+000: libcarb.events.plugin.so!std::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string()+0xa9d (??:?)
+001: libcarb.eventdispatcher.plugin.so!std::char_traits<char>::length(char const*)+0x140d (??:?)
+002: libcarb.assets.plugin.so!std::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(std::string const&, unsigned long, unsigned long)+0xbc0d (??:?)
+003: libcarb.datasource-file.plugin.so!std::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string()+0x73d (??:?)
+004: libgpu.foundation.plugin.so!std::fill(std::_Bit_iterator, std::_Bit_iterator, bool const&)+0x58d (??:?)
+005: libnet.plugin.so!std::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string()+0x10ed (??:?)
+006: libnet_realm.plugin.so!std::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string()+0x1bfd (??:?)
+007: libcarb.datasource-omniclient.plugin.so!std::_V2::condition_variable_any::~condition_variable_any()+0x1f7d (??:?)
+008: libomni.kit.renderer.plugin.so!std::__future_base::_State_baseV2::_M_is_deferred_future() const+0x585d (??:?)
+009: libpthread.so.0!funlockfile+0x60 (??:?)
+010: libomni.appwindow.plugin.so!std::string __gnu_cxx::__to_xstring<std::string, char>(int (*)(char*, unsigned long, char const*, __va_list_tag*), unsigned long, char const*, ...)+0x5332 (??:?)
+011: libomni.kit.renderer.plugin.so!std::__future_base::_State_baseV2::_M_is_deferred_future() const+0x73f6 (??:?)
+012: libomni.kit.renderer.plugin.so!carbGetPluginDeps+0x183e (??:?)
+013: libomni.kit.renderer.plugin.so!carbGetPluginDeps+0x3040 (??:?)
+014: libomni.kit.renderer.plugin.so!carbGetPluginDeps+0x452a (??:?)
+015: libomni.kit.renderer.ext.plugin.so!carbOnPluginPreStartup+0x142c (??:?)
+016: libomni.ext.plugin.so!void std::vector<std::string, std::allocator<std::string> >::_M_realloc_insert<std::string&>(__gnu_cxx::__normal_iterator<std::string*, std::vector<std::string, std::allocator<std::string> > >, std::string&)+0x2674 (??:?)
+017: libomni.ext.plugin.so!std::pair<std::__detail::_Node_iterator<std::string, true, true>, bool> std::_Hashtable<std::string, std::string, std::allocator<std::string>, std::__detail::_Identity, std::equal_to<std::string>, std::hash<std::string>, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<true, true, true> >::_M_insert<std::string const&, std::__detail::_AllocNode<std::allocator<std::__detail::_Hash_node<std::string, true> > > >(std::string const&, std::__detail::_AllocNode<std::allocator<std::__detail::_Hash_node<std::string, true> > > const&, std::integral_constant<bool, true>)+0x2c09 (??:?)
+018: libomni.ext.plugin.so!void std::vector<unsigned long, std::allocator<unsigned long> >::_M_realloc_insert<unsigned long>(__gnu_cxx::__normal_iterator<unsigned long*, std::vector<unsigned long, std::allocator<unsigned long> > >, unsigned long&&)+0x180e1 (??:?)
+019: libomni.ext.plugin.so!carbOnPluginPreStartup+0x58c8 (??:?)
+020: libomni.ext.plugin.so!carbOnPluginPreStartup+0xd1a0 (??:?)
+021: libomni.ext.plugin.so!carbOnPluginPreStartup+0xe507 (??:?)
+022: libomni.kit.app.plugin.so!void std::vector<std::string, std::allocator<std::string> >::_M_realloc_insert<std::string>(__gnu_cxx::__normal_iterator<std::string*, std::vector<std::string, std::allocator<std::string> > >, std::string&&)+0x1305b (??:?)
+023: libomni.kit.app.plugin.so!void std::vector<std::string, std::allocator<std::string> >::_M_realloc_insert<std::string>(__gnu_cxx::__normal_iterator<std::string*, std::vector<std::string, std::allocator<std::string> > >, std::string&&)+0x13820 (??:?)
+024: libomni.kit.app.plugin.so!_init+0x52fe (??:0)
+025: libomni.kit.app.plugin.so!carbOnPluginPreStartup+0xb96 (??:?)
+026: kit!_init+0x69f (??:0)
+027: libc.so.6!__libc_start_main+0xf3 (??:?)
+028: kit!_init+0xae3 (??:0)
