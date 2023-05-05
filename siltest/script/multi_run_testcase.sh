@@ -68,7 +68,7 @@ do
     sudo sh $siltestDir/script/backup_nano_osi_roadcast.sh  $siltestDir  $testcase_name   $ncdPath  $rrLogPath
    
     # generate evaluation report
-    #sudo sh  $siltestDir/script/evaluations.sh $siltestDir $testcase
+    sudo sh  $siltestDir/script/evaluations.sh $siltestDir $testcase
 
    echo "first completed"
 done
