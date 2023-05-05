@@ -4,6 +4,7 @@ sp="/-\|"
 i=1
 ctrlc_count=0
 
+#mkdir -p /drivesim-ov/logs
 touch /drivesim-ov/ds2_run.log
 touch /drivesim-ov/scenario_run.log
 
