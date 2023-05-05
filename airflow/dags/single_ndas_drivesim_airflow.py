@@ -78,7 +78,7 @@ done
 
 
 with DAG(
-    dag_id="single_run_ndas_drivesim_bash",
+    dag_id="single_testcase_ndas_drivesim_bash",
     schedule=None,
     start_date=pendulum.datetime(2021, 1, 1, tz="Asia/Shanghai"),
     catchup=False,
@@ -86,20 +86,20 @@ with DAG(
     tags=["siltest"]
 ) as dag:
 
-    start = EmptyOperator(task_id='start', dag=dag) 
+    start = EmptyOperator(task_id='Start', dag=dag) 
     run_ndas_container_task=BashOperator(task_id='run_ndas_container_task',bash_command=run_ndas_container,params={"siltest_dir":siltestDir.strip(),"ndas_image":ndasImage.strip()},dag=dag)
     run_drivesim_container_task=BashOperator(task_id='run_drivesim_container_task',bash_command=run_drivesim_container,params={"siltest_dir":siltestDir.strip(),"drivesim_image":drivesimImage.strip(),"omniverse_ip":omniverseIp.strip(),"testcase_path":testCasePath.strip()},dag=dag)
     watch_control_info_task=BashOperator(task_id='watch_control_info_task',bash_command=watch_control_info,dag=dag)
     run_ndas_script_task=BashOperator(task_id='run_ndas_script_task',bash_command='docker exec -d ndas bash -c "sh /home/run_ndas.sh"',dag=dag)
     watch_scenario_completed_task=BashOperator(task_id='watch_scenario_completed_task',bash_command=watch_scenario_completed,dag=dag)
     backup_nano_osi_roadcast_task = BashOperator(task_id="backup_nano_osi_roadcast_task",bash_command=backup_nano_osi_roadcast_file,params={"siltest_dir":siltestDir.strip(),"testcase_path":testCasePath.strip().split("/")[-1].split(".")[0],"ncdPath":ncdPath,"rrLogPath":rrLogPath},dag=dag)
-    evaluation_report_task = BashOperator(task_id="evaluation_report_task",bash_command=evaluations_report,params={"siltest_dir":siltestDir.strip(),"testcase_path":testCasePath.strip()},dag=dag)
+    generate_evaluation_report_task = BashOperator(task_id="generate_evaluation_report_task",bash_command=evaluations_report,params={"siltest_dir":siltestDir.strip(),"testcase_path":testCasePath.strip()},dag=dag)
     kill_nads_drivesim_container_task=BashOperator(task_id="kill_nads_drivesim_container_task",bash_command=kill_nads_drivesim_container,params={"siltest_dir":siltestDir.strip()},dag=dag)
     clean_data_task=BashOperator(task_id="clean_data_task",bash_command=clean_data,params={"siltest_dir":siltestDir.strip()},dag=dag)
-
+    end = EmptyOperator(task_id='End', dag=dag)
 
  
-[start,clean_data_task,kill_nads_drivesim_container_task]   >> run_ndas_container_task >> run_drivesim_container_task >> watch_control_info_task >> run_ndas_script_task >> watch_scenario_completed_task >> backup_nano_osi_roadcast_task >> evaluation_report_task
+start >> [clean_data_task,kill_nads_drivesim_container_task]   >> run_ndas_container_task >> run_drivesim_container_task >> watch_control_info_task >> run_ndas_script_task >> watch_scenario_completed_task >> backup_nano_osi_roadcast_task >> generate_evaluation_report_task >> end
 
 
 if __name__ == "__main__":
