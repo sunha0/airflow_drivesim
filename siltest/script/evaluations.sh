@@ -3,20 +3,19 @@
 
 
 siltest_dir=$1   #/data/siltest
-siltest_case_path=$2   #Val 	/drivesim-ov/testcase_assets/scenarios/autonomous_emergency_braking_aeb/aeb_china/ivista/aeb_ccrm_day_100_impact_70_gvt_20_3521574.xebtb
-
-ncdPath=$3    # /data/siltest/cache/
-rrLogPath=$4
+siltest_case_path=$2  # /drivesim-ov/testcase_assets/scenarios/blind_spot_monitoring_bsm/china_bsm_gbt/doubleside/bsd_50_double_gvt_overtaking_60_3623243.xebtb  
 
 
+#ncdPath=$4  #/data/siltest/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1 
+#rrLogPath=$5
 
-
-
-#rrLogPath = "${siltest_dir}/rrLog"
-#ncdPath   = "${siltest_dir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1"
+rrLogPath="${siltest_dir}/rrLog"
+ncdPath="${siltest_dir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.drivesim.e2e/23.1"
 
 
 siltest_case_evaluation=$(basename ${siltest_case_path} |cut -d "." -f 1)
+
+#evaluation_path="${siltest_dir}/digital-testing-product/testcase_assets/evaluations/${siltest_case_path%/*}/${siltest_case_evaluation}"
 
 evaluation_path=`echo "${siltest_dir}/digital-testing-product${siltest_case_path%/*}/${siltest_case_evaluation}" | sed 's#drivesim-ov\/##g' | sed 's#scenarios#evaluations#g'`
 
@@ -28,14 +27,15 @@ evaluation_test_case_file="${evaluation_path}/${siltest_case_evaluation}.xedf"
 
 
 siltest_case_evaluation_dir=${siltest_case_evaluation}_$(date "+%Y_%m_%d_%H%M%S")
+echo "siltest_case_evaluation_dir: $siltest_case_evaluation_dir"
 
-
-if [ ! -d ${siltest_dir}/silEvaluationOutput/${siltest_case_evaluationi_dir} ];then 
+if [ ! -d "${siltest_dir}/silEvaluationOutput/${siltest_case_evaluation_dir}" ];then 
+	echo 111111111
 	mkdir -p $siltest_dir/silEvaluationOutput/${siltest_case_evaluation_dir}
 fi
 
 
-if [ ! -d ${siltest_dir}/silEvaluationInput/${siltest_case_evaluation_dir} ];then
+if [ ! -d "${siltest_dir}/silEvaluationInput/${siltest_case_evaluation_dir}" ];then
         mkdir -p $siltest_dir/silEvaluationInput/${siltest_case_evaluation_dir}
 fi
 
@@ -71,17 +71,18 @@ csv_file_name=${csv_file_path##*/}
 log_file_name=${log_file_path##*/}
 hdf5_file_name=${hdf5_file_path##*/}
 
-
-docker run  --rm \
+mkdir -p  /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir} && chmod 777 -R /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir}
+docker run -i --rm \
        -v $siltest_dir/silEvaluationInput/${siltest_case_evaluation_dir}:/home/ubuntu \
-       -v /tmp/:/tmp/ \
+       -v /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir}:/tmp/${siltest_case_evaluation_dir} \
        artifact.swf.daimler.com/adasdai-docker/davt/davt:v0.40.0  pipenv run python ./davt.py  -d --app=DetestEval --eval-description-file /home/ubuntu/${xedf_file_name}  \
        --abd-config /home/ubuntu/${json_file_name}  \
        --input-can /home/ubuntu/${csv_file_name} \
        --input-rclog /home/ubuntu/${log_file_name} \
        --input-ecal /home/ubuntu/${hdf5_file_name} \
-       --force --output-path  /tmp/${siltest_case_evaluation}
-
-cp -r /tmp/${siltest_case_evaluation}  $siltest_dir/silEvaluationOutput/${siltest_case_evaluation_dir}/
-
-rm -rf /tmp/${siltest_case_evaluation}
+       --force --output-path  /tmp/${siltest_case_evaluation_dir}
+#echo "------ll------"
+#ls -al /tmp/${siltest_case_evaluation}/
+#echo "------ll------"
+#bash  /data/airflow/dags/scripts/copy_evaluation_report.sh  ${siltest_case_evaluation}  ${siltest_case_evaluation_dir}
+#echo "after  copy...."
