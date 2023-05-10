@@ -27,10 +27,10 @@ evaluation_test_case_file="${evaluation_path}/${siltest_case_evaluation}.xedf"
 
 
 siltest_case_evaluation_dir=${siltest_case_evaluation}_$(date "+%Y_%m_%d_%H%M%S")
-echo "siltest_case_evaluation_dir: $siltest_case_evaluation_dir"
+echo "=======================siltest_case_evaluation_dir: $siltest_case_evaluation_dir======================="
 
 if [ ! -d "${siltest_dir}/silEvaluationOutput/${siltest_case_evaluation_dir}" ];then 
-	echo 111111111
+	
 	mkdir -p $siltest_dir/silEvaluationOutput/${siltest_case_evaluation_dir}
 fi
 
@@ -86,3 +86,11 @@ docker run -i --rm \
 #echo "------ll------"
 #bash  /data/airflow/dags/scripts/copy_evaluation_report.sh  ${siltest_case_evaluation}  ${siltest_case_evaluation_dir}
 #echo "after  copy...."
+echo "=======================Check that the number of evaluation reports is correct ======================="
+reportNum=`ls ${siltest_case_evaluation_dir} |wc -l`
+if [ $reportNum -eq 8 ]; then
+echo "======================= evaluation reports is correct ======================="
+
+else
+echo "======================= evaluation reports is incorrect! ======================="
+fi
