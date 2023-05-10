@@ -71,10 +71,10 @@ csv_file_name=${csv_file_path##*/}
 log_file_name=${log_file_path##*/}
 hdf5_file_name=${hdf5_file_path##*/}
 
-mkdir -p  /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir} && chmod 777 -R /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir}
+chmod 777 -R $siltest_dir/silEvaluationOutput/${siltest_case_evaluation_dir}/
 docker run -i --rm \
        -v $siltest_dir/silEvaluationInput/${siltest_case_evaluation_dir}:/home/ubuntu \
-       -v /data/siltest/silEvaluationOutput/${siltest_case_evaluation_dir}:/tmp/${siltest_case_evaluation_dir} \
+       -v $siltest_dir/silEvaluationOutput/${siltest_case_evaluation_dir}:/tmp/${siltest_case_evaluation_dir} \
        artifact.swf.daimler.com/adasdai-docker/davt/davt:v0.40.0  pipenv run python ./davt.py  -d --app=DetestEval --eval-description-file /home/ubuntu/${xedf_file_name}  \
        --abd-config /home/ubuntu/${json_file_name}  \
        --input-can /home/ubuntu/${csv_file_name} \
@@ -87,7 +87,7 @@ docker run -i --rm \
 #bash  /data/airflow/dags/scripts/copy_evaluation_report.sh  ${siltest_case_evaluation}  ${siltest_case_evaluation_dir}
 #echo "after  copy...."
 chmod 777 -R ${siltest_case_evaluation_dir}
-reportNum=`ls ${siltest_case_evaluation_dir} |wc -l`
+reportNum=`ls $siltest_dir/silEvaluationOutput/${siltest_case_evaluation_dir} |wc -l`
 if [ $reportNum -eq 8 ]; then
 echo "======================= evaluation reports is correct ======================="
 
