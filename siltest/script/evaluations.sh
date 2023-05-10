@@ -86,7 +86,7 @@ docker run -i --rm \
 #echo "------ll------"
 #bash  /data/airflow/dags/scripts/copy_evaluation_report.sh  ${siltest_case_evaluation}  ${siltest_case_evaluation_dir}
 #echo "after  copy...."
-echo "=======================Check that the number of evaluation reports is correct ======================="
+chmod 777 -R ${siltest_case_evaluation_dir}
 reportNum=`ls ${siltest_case_evaluation_dir} |wc -l`
 if [ $reportNum -eq 8 ]; then
 echo "======================= evaluation reports is correct ======================="
