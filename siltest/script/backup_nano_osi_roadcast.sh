@@ -26,7 +26,7 @@ osi_file=$(find ${ncdPath}/osi_recording -name "*.hdf5")
 
 [ -n "${ncd_file}" ] && cp -r ${ncd_file} $siltest_dir/silBackup/${siltest_case_dir}
 [ -n "${osi_file}" ] && cp -r ${osi_file} $siltest_dir/silBackup/${siltest_case_dir}
-[ -n "${rodecast_file}" ] && cp -r ${rodecast_file} $siltest_dir/silBackup/${siltest_case_dir}
+#[ -n "${rodecast_file}" ] && cp -r ${rodecast_file} $siltest_dir/silBackup/${siltest_case_dir}
 tar zcvf  $siltest_dir/silBackup/${siltest_case_dir}/rrLog.tar.gz  $rrLogPath
 
 
