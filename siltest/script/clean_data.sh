@@ -4,4 +4,4 @@ rm -rf  ${siltestDir}/cache/dockerovcache-dev/.nvidia-omniverse/logs/Kit/omni.dr
 rm -rf  ${siltestDir}/rrLog/*
 rm -rf  ${siltestDir}/silEvaluationInput/*
 
-echo "=======================cache & rrLog directory has deleted.======================="
+echo "======================= cache & rrLog directory has been deleted.======================="
